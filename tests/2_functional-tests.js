@@ -193,48 +193,69 @@ suite('Functional Tests:', function() {
   });
 
   test('Deleting a reply with the incorrect password: DELETE request to /api/replies/{board} with an invalid delete_password', async () => {
-    const threadDetails = await createThreads('Thread created for deleting a reply with the incorrect password', 1);
-    const replyDetails = await createReplies(threadDetails[0]._id, 'Test reply created for deleting a reply with the incorrect password', 1);
-    const res = await chai.request(server)
-    .del('/api/replies/tests/')
-    .send({
-      thread_id: threadDetails[0]._id,
-      reply_id: replyDetails[0]._id,
-      delete_password: 'incorrect password'
-    });
-    assert.equal(res.ok, true, 'Failure deleting a reply with the incorrect password (unsuccessful request).');
-    assert.equal(res.text, 'incorrect password', 'Failure deleting a reply with the incorrect password (incorrect text response).');
+    try {
+      const threadDetails = await createThreads('Thread created for deleting a reply with the incorrect password', 1);
+      const replyDetails = await createReplies(threadDetails[0]._id, 'Test reply created for deleting a reply with the incorrect password', 1);
+      const res = await chai.request(server)
+      .del('/api/replies/tests/')
+      .set('Content-Type', 'application/json')
+      .send({
+        thread_id: threadDetails[0]._id,
+        reply_id: replyDetails[0]._id,
+        delete_password: 'incorrect password'
+      });
+      assert.equal(res.ok, true, 'Failure deleting a reply with the incorrect password (unsuccessful request).');
+      assert.equal(res.text, 'incorrect password', 'Failure deleting a reply with the incorrect password (incorrect text response).');  
+    }
+    catch (err) {
+      console.error('Error testing deleting a reply with the incorrect password:', err);
+      throw err;
+    }
   });
 
   test('Deleting a reply with the correct password: DELETE request to /api/replies/{board} with a valid delete_password', async () => {
-    const threadDetails = await createThreads('Thread created for deleting a reply with the correct password', 1);
-    const replyDetails = await createReplies(threadDetails[0]._id, 'Test reply created for deleting a reply with the correct password', 1);
-    const res = await chai.request(server)
-    .del('/api/replies/tests/')
-    .send({
-      thread_id: threadDetails[0]._id,
-      reply_id: replyDetails[0]._id,
-      delete_password: 'password'
-    });
-    assert.equal(res.ok, true, 'Failure deleting a reply with the correct password (unsuccessful request).');
-    assert.equal(res.text, 'success', 'Failure deleting a reply with the correct password (incorrect text response).');
-    const foundThread = await Thread.findById(threadDetails[0]._id);
-    assert.equal(foundThread.replies[0].text, '[deleted]', 'Failure deleting a reply with the correct password (incorrect "text" value)');
+    try {
+      const threadDetails = await createThreads('Thread created for deleting a reply with the correct password', 1);
+      const replyDetails = await createReplies(threadDetails[0]._id, 'Test reply created for deleting a reply with the correct password', 1);
+      const res = await chai.request(server)
+      .del('/api/replies/tests/')
+      .set('Content-Type', 'application/json')
+      .send({
+        thread_id: threadDetails[0]._id,
+        reply_id: replyDetails[0]._id,
+        delete_password: 'password'
+      });
+      assert.equal(res.ok, true, 'Failure deleting a reply with the correct password (unsuccessful request).');
+      assert.equal(res.text, 'success', 'Failure deleting a reply with the correct password (incorrect text response).');
+      const foundThread = await Thread.findById(threadDetails[0]._id);
+      assert.equal(foundThread.replies[0].text, '[deleted]', 'Failure deleting a reply with the correct password (incorrect "text" value)');  
+    }
+    catch (err) {
+      console.error('Error testing deleting a reply with the correct password:', err);
+      throw err;
+    }    
   });
 
   test('Reporting a reply: PUT request to /api/replies/{board}', async () => {
-    const threadDetails = await createThreads('Thread created for reporting a reply', 1);
-    const replyDetails = await createReplies(threadDetails[0]._id, 'Test reply created for reporting a reply', 1);
-    const res = await chai.request(server)
-    .put('/api/replies/tests/')
-    .send({
-      thread_id: threadDetails[0]._id,
-      reply_id: replyDetails[0]._id
-    });
-    assert.equal(res.ok, true, 'Failure reporting a reply (unsuccessful request).');
-    assert.equal(res.text, 'reported', 'Failure reporting a reply (incorrect text response).');
-    const foundThread = await Thread.findById(threadDetails[0]._id);
-    assert.equal(foundThread.replies[0].reported, true, 'Failure reporting a reply (incorrect "reported" value)');
+    try {
+      const threadDetails = await createThreads('Thread created for reporting a reply', 1);
+      const replyDetails = await createReplies(threadDetails[0]._id, 'Test reply created for reporting a reply', 1);
+      const res = await chai.request(server)
+      .put('/api/replies/tests/')
+      .set('Content-Type', 'application/json')
+      .send({
+        thread_id: threadDetails[0]._id,
+        reply_id: replyDetails[0]._id
+      });
+      assert.equal(res.ok, true, 'Failure reporting a reply (unsuccessful request).');
+      assert.equal(res.text, 'reported', 'Failure reporting a reply (incorrect text response).');
+      const foundThread = await Thread.findById(threadDetails[0]._id);
+      assert.equal(foundThread.replies[0].reported, true, 'Failure reporting a reply (incorrect "reported" value)');  
+    }
+    catch (err) {
+      console.error('Error testing reporting a reply:', err);
+      throw err;
+    }
   });
 
 });
